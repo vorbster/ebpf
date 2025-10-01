@@ -1,0 +1,38 @@
+#!/bin/bpftrace
+
+BEGIN
+{
+
+// From include/linux/interrupt.h
+// I didn't find a way to convert this automatically
+// There is a kernel function that converts softirq number to name
+// but I don't know how to call it from bpftrace
+
+      @softirqs[0] = "HI";
+	    @softirqs[1] = "TIMER";
+	    @softirqs[2] = "NET_TX";
+	    @softirqs[3] = "NET_RX";
+	    @softirqs[4] = "BLOCK";
+	    @softirqs[5] = "BLOCK_IOPOLL";
+	    @softirqs[6] = "TASKLET";
+	    @softirqs[7] = "SCHED";
+	    @softirqs[8] = "HRTIMER";
+	    @softirqs[9] = "RCU";
+}
+
+tracepoint:irq:softirq_entry
+{
+	if (@softirqs[args.vec] != "")
+	{
+		printf("Softirq: %s (%d)\n", @softirqs[args.vec], args.vec);
+	}
+	else
+	{
+		printf("Unknows softirq %d\n", args.vec);
+	}
+}
+
+END
+{
+	clear(@softirqs);
+}
