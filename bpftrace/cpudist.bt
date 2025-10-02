@@ -3,6 +3,8 @@
 BEGIN
 {
 	@start_time[tid] = (uint64)0;
+	@voluntary_switches = 0;
+	@involuntary_switches = 0;
 }
 
 tracepoint:sched:sched_switch
@@ -13,6 +15,13 @@ tracepoint:sched:sched_switch
 		@on_cpu_dist = hist($on_cpu_time);
 		delete (@start_time[args->prev_pid]);
 	}
+	if (args->prev_pid == 0) {
+		@voluntary_switches += 1;
+	}
+	else {	
+		@involuntary_switches += 1;
+	}
+		
 	@start_time[args->next_pid] = nsecs;
 }
 
