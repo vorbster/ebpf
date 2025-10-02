@@ -1,0 +1,22 @@
+#!/bin/bpftrace
+
+BEGIN
+{
+	@start_time[tid] = (uint64)0;
+}
+
+tracepoint:sched:sched_switch
+{
+	if (@start_time[args->prev_pid] != 0) 
+	{
+		$on_cpu_time = (nsecs - @start_time[args->prev_pid]) / 1000;
+		@on_cpu_dist = hist($on_cpu_time);
+		delete (@start_time[args->prev_pid]);
+	}
+	@start_time[args->next_pid] = nsecs;
+}
+
+END
+{
+	clear(@start_time);
+}
