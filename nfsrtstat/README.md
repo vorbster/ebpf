@@ -15,7 +15,7 @@ This is a BCC program that uses eBPF to collect the statistics. The program is w
 
 # Usage
 
-To use this program, you need to have the BCC framework installed on your system. You can then run it using the following command:
+To use this program, you need to have the BCC framework installed on your system (In RHEL package python3-bcc pulls all required dependencies). You can then run it using the following command:
 
 ```
 sudo python3 nfsrtstat.py
